@@ -1,12 +1,27 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
 import { COLORS } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function ProfileScreen() {
-  
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
+
   const generatePDF = async () => {
     try {
       const html = `
@@ -45,7 +60,7 @@ export default function ProfileScreen() {
       if (isAvailable) {
         await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
       } else {
-        Alert.alert('Sukses', 'PDF berhasil dibuat, namun perangkat tidak mendukung fitur Share.');
+        Alert.alert('Sukses', 'PDF berhasil dibuat, namun perangkat Anda tidak mendukung fitur Share.');
       }
     } catch (error) {
       Alert.alert('Gagal', 'Terjadi kesalahan saat membuat PDF.');
@@ -55,11 +70,20 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Ionicons name="person" size={40} color={COLORS.primary} />
-        </View>
+        <TouchableOpacity onPress={pickImage} style={styles.avatarContainer}>
+          {profileImage ? (
+            <Image source={{ uri: profileImage }} style={styles.avatarImage} />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Ionicons name="camera" size={40} color={COLORS.primary} />
+            </View>
+          )}
+          <View style={styles.editBadge}>
+            <Ionicons name="pencil" size={12} color={COLORS.white} />
+          </View>
+        </TouchableOpacity>
         <Text style={styles.name}>Pelajar Aktif</Text>
-        <Text style={styles.level}>Pemula - HSK 1</Text>
+        <Text style={styles.level}>Klik foto untuk mengubah</Text>
       </View>
 
       <View style={styles.statsContainer}>
@@ -96,14 +120,40 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 40,
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: COLORS.primaryLight + '50',
+  avatarContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
+  avatarPlaceholder: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: COLORS.primaryLight + '40',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    borderStyle: 'dashed',
+  },
+  avatarImage: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    borderWidth: 3,
+    borderColor: COLORS.primary,
+  },
+  editBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: COLORS.secondary,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: COLORS.background,
   },
   name: {
     fontSize: 24,
@@ -111,8 +161,8 @@ const styles = StyleSheet.create({
     color: COLORS.text,
   },
   level: {
-    fontSize: 16,
-    color: COLORS.primary,
+    fontSize: 14,
+    color: COLORS.textLight,
     marginTop: 4,
   },
   statsContainer: {
@@ -120,39 +170,46 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: COLORS.surface,
     padding: 24,
-    borderRadius: 20,
+    borderRadius: 24,
     shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 10,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.04,
+    shadowRadius: 15,
+    elevation: 3,
     marginBottom: 40,
   },
   statBox: {
     alignItems: 'center',
   },
   statNumber: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: COLORS.text,
+    fontSize: 32,
+    fontWeight: '900',
+    color: COLORS.primary,
   },
   statLabel: {
     fontSize: 14,
     color: COLORS.textLight,
-    marginTop: 4,
+    marginTop: 6,
+    fontWeight: '500',
   },
   exportBtn: {
     backgroundColor: COLORS.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
-    borderRadius: 16,
+    padding: 18,
+    borderRadius: 20,
     gap: 12,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
   exportBtnText: {
     color: COLORS.white,
     fontSize: 16,
     fontWeight: 'bold',
+    letterSpacing: 0.5,
   }
 });
