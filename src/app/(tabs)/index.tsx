@@ -25,7 +25,10 @@ export default function HomeScreen() {
           <View style={[styles.progressBarFill, { width: '2%' }]} />
         </View>
         <Text style={styles.progressText}>10 Kata Baru Menunggu</Text>
-        <TouchableOpacity style={styles.primaryButton}>
+        <TouchableOpacity 
+          style={styles.primaryButton}
+          onPress={() => router.push('/explore/lesson')}
+        >
           <Text style={styles.buttonText}>Mulai Belajar Hari Ini</Text>
           <Ionicons name="arrow-forward" size={20} color={COLORS.white} />
         </TouchableOpacity>
@@ -51,7 +54,10 @@ export default function HomeScreen() {
           </View>
           <Text style={styles.gridItemText}>Percakapan</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.gridItem}>
+        <TouchableOpacity 
+          style={styles.gridItem}
+          onPress={() => router.push('/explore/quiz')}
+        >
           <View style={[styles.iconWrapper, { backgroundColor: COLORS.success + '40' }]}>
             <Ionicons name="game-controller" size={28} color={COLORS.success} />
           </View>
