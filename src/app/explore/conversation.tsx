@@ -73,10 +73,11 @@ export default function ConversationScreen() {
         },
         body: JSON.stringify({
           model: 'llama3-8b-8192',
+          response_format: { type: "json_object" },
           messages: [
             { 
               role: 'system', 
-              content: "Kamu adalah teman chat belajar bahasa Mandarin yang sangat ramah. Semua balasanmu WAJIB menggunakan format 3 baris persis seperti ini:\nHanzi: [Karakter Mandarin saja]\nPinyin: [Pinyin dari karakter tersebut]\nArti: [Arti dalam bahasa Indonesia]\n\nJANGAN berikan teks lain atau basa-basi di luar format tersebut."
+              content: "Kamu adalah teman chat belajar bahasa Mandarin yang sangat ramah. Semua balasanmu WAJIB menggunakan format JSON murni. Kamu tidak boleh membalas selain objek JSON ini: {\"hanzi\": \"Karakter Mandarin saja\", \"pinyin\": \"Pinyin dari karakter tersebut\", \"indonesian\": \"Arti dalam bahasa Indonesia\"}"
             },
             ...apiMessages
           ],
@@ -88,7 +89,16 @@ export default function ConversationScreen() {
       const data = await response.json();
       if (data.choices && data.choices.length > 0) {
         const aiText = data.choices[0].message.content;
-        const parsed = parseAIResponse(aiText);
+        let parsed = { hanzi: '', pinyin: '', indonesian: '' };
+        
+        try {
+          const parsedJSON = JSON.parse(aiText);
+          parsed.hanzi = parsedJSON.hanzi || aiText;
+          parsed.pinyin = parsedJSON.pinyin || '';
+          parsed.indonesian = parsedJSON.indonesian || '';
+        } catch (e) {
+          parsed.hanzi = aiText; // Fallback if still not valid JSON
+        }
         
         const botMsg: Message = {
           id: Date.now().toString(),

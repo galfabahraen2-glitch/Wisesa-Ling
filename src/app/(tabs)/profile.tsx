@@ -5,9 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import * as ImagePicker from 'expo-image-picker';
+import { useProgressStore } from '../../store/progressStore';
 
 export default function ProfileScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const currentDay = useProgressStore((state) => state.currentDay);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -43,8 +45,8 @@ export default function ProfileScreen() {
             
             <div class="card">
               <div class="stat">Nama Pelajar: <strong>Pelajar Aktif</strong></div>
-              <div class="stat">Hari Kurikulum: <strong>Hari 1 dari 365</strong></div>
-              <div class="stat">Kosakata Dikuasai: <strong>10 Kata</strong></div>
+              <div class="stat">Hari Kurikulum: <strong>Hari ${currentDay} dari 365</strong></div>
+              <div class="stat">Kosakata Dikuasai: <strong>${currentDay * 10} Kata</strong></div>
               <div class="stat">Akurasi Kuis: <strong>100%</strong></div>
             </div>
             
@@ -88,15 +90,15 @@ export default function ProfileScreen() {
 
       <View style={styles.statsContainer}>
         <View style={styles.statBox}>
-          <Text style={styles.statNumber}>10</Text>
+          <Text style={styles.statNumber}>{currentDay * 10}</Text>
           <Text style={styles.statLabel}>Kata</Text>
         </View>
         <View style={styles.statBox}>
-          <Text style={styles.statNumber}>1</Text>
+          <Text style={styles.statNumber}>{currentDay}</Text>
           <Text style={styles.statLabel}>Hari</Text>
         </View>
         <View style={styles.statBox}>
-          <Text style={styles.statNumber}>3</Text>
+          <Text style={styles.statNumber}>{currentDay * 3}</Text>
           <Text style={styles.statLabel}>Kuis</Text>
         </View>
       </View>

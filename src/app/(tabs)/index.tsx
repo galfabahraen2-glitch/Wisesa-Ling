@@ -3,8 +3,11 @@ import { COLORS } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
+import { useProgressStore } from '../../store/progressStore';
+
 export default function HomeScreen() {
   const router = useRouter();
+  const currentDay = useProgressStore((state) => state.currentDay);
   
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -20,9 +23,9 @@ export default function HomeScreen() {
 
       <View style={styles.progressCard}>
         <Text style={styles.cardTitle}>Kurikulum 365 Hari</Text>
-        <Text style={styles.cardSubtitle}>Hari 1 dari 365</Text>
+        <Text style={styles.cardSubtitle}>Hari {currentDay} dari 365</Text>
         <View style={styles.progressBarBg}>
-          <View style={[styles.progressBarFill, { width: '2%' }]} />
+          <View style={[styles.progressBarFill, { width: `${(currentDay / 365) * 100}%` }]} />
         </View>
         <Text style={styles.progressText}>10 Kata Baru Menunggu</Text>
         <TouchableOpacity 
